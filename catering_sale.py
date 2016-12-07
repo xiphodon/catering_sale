@@ -91,6 +91,17 @@ def catering_dish_profit():
   plt.show()
 
 
+def correlation_analyze():
+  '''
+  计算菜品之间的相关系数
+  :return:
+  '''
+  data = getDataFromExcel('./data/catering_sale_all.xls', u'日期')
+  print(data.corr())  # 相关系数矩阵，即给出了任意两款菜式之间的相关系数
+  print(data.corr()[u'百合酱蒸凤爪'])  # 只显示“百合酱蒸凤爪”与其他菜式的相关系数
+  print(data[u'百合酱蒸凤爪'].corr(data[u'翡翠蒸香茜饺']))  # 计算“百合酱蒸凤爪”与“翡翠蒸香茜饺”的相关系数
+
+
 def getDataFromExcel(catering_sale_url,index_col):
   # catering_sale_url = './data/catering_sale.xls'  # excel文件路径_餐饮数据
   data = pd.read_excel(catering_sale_url, index_col=index_col)  # 读取数据，指定“日期”列为索引列
@@ -100,6 +111,7 @@ def getDataFromExcel(catering_sale_url,index_col):
 if __name__ == "__main__":
   # show_boxplot()
   # statistics_analyze()
-  catering_dish_profit()
+  # catering_dish_profit()
+  correlation_analyze()
 
 
