@@ -9,12 +9,18 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt #导入图像库
+# from __future__ import print_function
+
 
 def show_boxplot():
   '''
   利用箱线图检测餐饮销售数据异常值
   :return:
   '''
+
+  data = getDataFromExcel('./data/catering_sale.xls',u'日期')
+  print(data.describe())
+
   plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
   plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
@@ -41,11 +47,14 @@ def show_boxplot():
   plt.show()  # 展示箱线图
 
 
-def statistics_analyze(data):
+def statistics_analyze():
   '''
   餐饮销量数据统计量分析
   :return:
   '''
+  data = getDataFromExcel('./data/catering_sale.xls',u'日期')
+  print(data.describe())
+
   data = data[(data[u'销量'] > 400) & (data[u'销量'] < 5000)]  # 过滤异常数据
   statistics = data.describe()  # 保存基本统计量
 
@@ -56,17 +65,41 @@ def statistics_analyze(data):
   print(statistics)
 
 
-def init():
-  catering_sale_url = './data/catering_sale.xls'  # excel文件路径_餐饮数据
-  data = pd.read_excel(catering_sale_url, index_col=u'日期')  # 读取数据，指定“日期”列为索引列
+def catering_dish_profit():
+  '''
+  菜品盈利数据 帕累托图
+  :return:
+  '''
+
+  data = getDataFromExcel('./data/catering_dish_profit.xls',u'菜品名')
+  # 初始化参数
+  data = data[u'盈利'].copy()
+  # data.sort(ascending=False)
+  data.sort_values(inplace=True,ascending=False)
+
+  plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+  plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
+  plt.figure()
+  data.plot(kind='bar')
+  plt.ylabel(u'盈利（元）')
+  p = 1.0 * data.cumsum() / data.sum()
+  p.plot(color='r', secondary_y=True, style='-o', linewidth=2)
+  plt.annotate(format(p[6], '.4%'), xy=(6, p[6]), xytext=(6 * 0.9, p[6] * 0.9),
+               arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))  # 添加注释，即85%处的标记。这里包括了指定箭头样式。
+  plt.ylabel(u'盈利（比例）')
+  plt.show()
+
+
+def getDataFromExcel(catering_sale_url,index_col):
+  # catering_sale_url = './data/catering_sale.xls'  # excel文件路径_餐饮数据
+  data = pd.read_excel(catering_sale_url, index_col=index_col)  # 读取数据，指定“日期”列为索引列
   return data
 
 
 if __name__ == "__main__":
-  data = init()
-  print(data.describe())
-
   # show_boxplot()
-  statistics_analyze(data)
+  # statistics_analyze()
+  catering_dish_profit()
 
 
