@@ -10,7 +10,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt #导入图像库
 # from __future__ import print_function
-
+from scipy.interpolate import lagrange
 
 def show_boxplot():
   '''
@@ -108,10 +108,43 @@ def getDataFromExcel(catering_sale_url,index_col):
   return data
 
 
+
+def lagrange_interp():
+  '''
+  用拉格朗日法进行插补
+  :return:
+  '''
+  outputfile = './tmp/sales.xls' # 输出数据路径
+  data = getDataFromExcel('./data/catering_sale.xls',None)
+  data[u'销量'][(data[u'销量']<400) | (data[u'销量'] > 5000)] = None # 过滤异常值，将其变为空值
+
+  for i in data.columns:
+    for j in range(len(data)):
+      if(data[i].isnull())[j]:
+        data[i][j] = ployinterp_column(data[i],j)
+
+  data.to_excel(outputfile)
+
+
+
+def ployinterp_column(s,n,k=5):
+  '''
+  自定义列向量插值函数
+  :param s: s为列向量
+  :param n: n为被插值的位置
+  :param k: k为取前后的数据个数，默认为5
+  :return: 插值结果
+  '''
+  y = s[list(range(n-k,n)) + list(range(n+1, n+1+k))]
+  y = y[y.notnull()] #剔除空值
+  return lagrange(y.index, list(y))(n) # 插值并返回插值结果
+
+
+
 if __name__ == "__main__":
   # show_boxplot()
   # statistics_analyze()
   # catering_dish_profit()
-  correlation_analyze()
-
+  # correlation_analyze()
+  lagrange_interp()
 
