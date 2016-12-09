@@ -7,6 +7,7 @@
 # @Software: PyCharm
 
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt #导入图像库
 # from __future__ import print_function
@@ -103,6 +104,12 @@ def correlation_analyze():
 
 
 def getDataFromExcel(catering_sale_url,index_col):
+  '''
+  读取excel数据
+  :param catering_sale_url: excel文件路径
+  :param index_col: 索引列
+  :return: excel数据
+  '''
   # catering_sale_url = './data/catering_sale.xls'  # excel文件路径_餐饮数据
   data = pd.read_excel(catering_sale_url, index_col=index_col)  # 读取数据，指定“日期”列为索引列
   return data
@@ -111,6 +118,7 @@ def getDataFromExcel(catering_sale_url,index_col):
 
 def lagrange_interp():
   '''
+  数据清洗
   用拉格朗日法进行插补
   :return:
   '''
@@ -141,10 +149,25 @@ def ployinterp_column(s,n,k=5):
 
 
 
+def data_normalization():
+  '''
+  数据规范化
+  :return:
+  '''
+  datafile = './data/normalization_data.xls'
+  data = pd.read_excel(datafile,header=None) # 读取数据
+
+  print(data) # 原始数据
+  print((data - data.min())/(data.max() - data.min())) # 最小-最大规范化
+  print((data - data.mean())/data.std()) # 零-均值规范化
+  print(data/10**np.ceil(np.log10(data.abs().max()))) # 小数定标规范化
+
+
+
 if __name__ == "__main__":
   # show_boxplot()
   # statistics_analyze()
   # catering_dish_profit()
   # correlation_analyze()
-  lagrange_interp()
-
+  # lagrange_interp()
+  data_normalization()
